@@ -15,5 +15,6 @@ process.stdin.on('data', function (data) {
   if (args[0] === 'head') commands.head(args);
   if (args[0] === 'tail') commands.tail(args);
   if (args[0] === 'ls') commands.ls(args);
+  if (args[0] === 'curl') commands.curl(args);
 
-});
+})

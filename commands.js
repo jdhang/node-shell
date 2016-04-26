@@ -1,4 +1,5 @@
-var fs = require('fs');
+var fs = require('fs')
+var request = require('request')
 
 module.exports = {
   pwd: function(args) {
@@ -33,7 +34,7 @@ module.exports = {
 
     setTimeout(function () {
       process.stdout.write('\nprompt > ');
-    }, 10);
+    }, 5);
 
   },
 
@@ -42,22 +43,46 @@ module.exports = {
 
     files.forEach(function (file) {
       fs.readFile(file, function (err, data) {
-
+        if (err) throw err
+        process.stdout.write('==> ' + file + ' <==\n') 
+        process.stdout.write(data.toString().split('\n').filter(function (line, index) {
+          return index < 5
+        }).join('\n'))
+        process.stdout.write('\n')
       })
-    }) 
-    process.stdout.write(fs.readFileSync(args[1]).toString().split('\n').filter(function (line, index) {
-      return index < 5
-    }).join('\n'));
-    process.stdout.write('\nprompt > ');
+    })
+    setTimeout(function () {
+      process.stdout.write('\nprompt > ');
+    }, 5)
   },
 
   tail: function(args) {
-    var linesArray = fs.readFileSync(args[1]).toString().split('\n');
-    process.stdout.write(linesArray.filter(function (line, index) {
-      return index >= linesArray.length - 5;
-    }).join('\n'));
-    process.stdout.write('\nprompt > ');
+    var files = args.slice(1)
+
+    files.forEach(function (file) {
+      fs.readFile(file, function (err, data) {
+        if (err) throw err
+        process.stdout.write('==> ' + file + ' <==\n') 
+        process.stdout.write(data.toString().split('\n').filter(function (line, index) {
+          return index >= data.toString().split('\n').length - 5;
+        }).join('\n'))
+        process.stdout.write('\n')
+      })
+    })
+    setTimeout(function () {
+      process.stdout.write('\nprompt > ');
+    }, 5)
+  },
+
+  curl: function(args) {
+    var url = 'http://' + args[1]
+
+    request(url, function (err, response, body) {
+      if (err) throw err
+      if (response.statusCode === 200) {
+        process.stdout.write(body)
+        process.stdout.write('\nprompt > ');
+      }
+    }) 
   }
 }
-
-
