@@ -7,7 +7,13 @@ process.stdout.write('prompt > ');
 
 // The stdin 'data' event fires after a user types in a line
 process.stdin.on('data', function (data) {
-  var args = data.toString().trim().split(' '); // remove the newline
+  var cmdString = data.toString().trim()
+  var cmdList = cmdString.split(/\s*\|\s*/g)
+  var args = cmdList[0].split(' '); // remove the newline
+  var done = function (output) {
+    process.stdout.write(output)
+    process.stdout.write('\nprompt > ')
+  }
 
   if (args[0] === 'pwd') commands.pwd(args, done);
   if (args[0] === 'date') commands.date(args, done);
@@ -18,8 +24,3 @@ process.stdin.on('data', function (data) {
   if (args[0] === 'curl') commands.curl(args, done);
 
 })
-
-var done = function (output) {
-  process.stdout.write(output)
-  process.stdout.write('\nprompt > ')
-}
