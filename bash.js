@@ -9,12 +9,17 @@ process.stdout.write('prompt > ');
 process.stdin.on('data', function (data) {
   var args = data.toString().trim().split(' '); // remove the newline
 
-  if (args[0] === 'pwd') commands.pwd(args);
-  if (args[0] === 'date') commands.date(args);
-  if (args[0] === 'cat') commands.cat(args);
-  if (args[0] === 'head') commands.head(args);
-  if (args[0] === 'tail') commands.tail(args);
-  if (args[0] === 'ls') commands.ls(args);
-  if (args[0] === 'curl') commands.curl(args);
+  if (args[0] === 'pwd') commands.pwd(args, done);
+  if (args[0] === 'date') commands.date(args, done);
+  if (args[0] === 'cat') commands.cat(args, done);
+  if (args[0] === 'head') commands.head(args, done);
+  if (args[0] === 'tail') commands.tail(args, done);
+  if (args[0] === 'ls') commands.ls(args, done);
+  if (args[0] === 'curl') commands.curl(args, done);
 
 })
+
+var done = function (output) {
+  process.stdout.write(output)
+  process.stdout.write('\nprompt > ')
+}

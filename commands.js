@@ -2,86 +2,88 @@ var fs = require('fs')
 var request = require('request')
 
 module.exports = {
-  pwd: function(args) {
-    process.stdout.write(process.env.PWD);
-    process.stdout.write('\nprompt > ');
+  pwd: function(args, done) {
+    done(process.env.PWD);
   },
 
-  date: function(args) {
-    process.stdout.write((new Date()).toString());
-    process.stdout.write('\nprompt > ');
+  date: function(args, done) {
+    done((new Date()).toString());
   },
 
-  ls: function(args) {
+  ls: function(args, done) {
+    var output = '';
     fs.readdir('.',function(err,files) {
       if(err) throw err;
       files.forEach(function(file) {
-        process.stdout.write(file.toString() + '\n');
+        output += file.toString() + '\n'
       })
-      process.stdout.write('\nprompt > ');
+      done(output)
     })
   },
 
-  cat: function(args) {
+  cat: function(args, done) {
     var files = args.slice(1);
+    var output = ''
 
     files.forEach(function (file) {
       fs.readFile(file, function (err, data) {
         if (err) throw err;
-        process.stdout.write(data.toString());
+        output += data.toString()
       });
+      output += '\n'
     });
 
     setTimeout(function () {
-      process.stdout.write('\nprompt > ');
+      done(output)
     }, 5);
-
   },
 
-  head: function(args) {
+  head: function(args, done) {
     var files = args.slice(1);
+    var output = ''
 
     files.forEach(function (file) {
       fs.readFile(file, function (err, data) {
         if (err) throw err
-        process.stdout.write('==> ' + file + ' <==\n') 
-        process.stdout.write(data.toString().split('\n').filter(function (line, index) {
+        output += '==> ' + file + ' <==\n'
+        output += data.toString().split('\n').filter(function (line, index) {
           return index < 5
-        }).join('\n'))
-        process.stdout.write('\n')
+        }).join('\n')
+        output += '\n'
       })
     })
+
     setTimeout(function () {
-      process.stdout.write('\nprompt > ');
+      done(output)
     }, 5)
   },
 
-  tail: function(args) {
+  tail: function(args, done) {
     var files = args.slice(1)
+    var output = ''
 
     files.forEach(function (file) {
       fs.readFile(file, function (err, data) {
         if (err) throw err
-        process.stdout.write('==> ' + file + ' <==\n') 
-        process.stdout.write(data.toString().split('\n').filter(function (line, index) {
+        output += '==> ' + file + ' <==\n'
+        output += data.toString().split('\n').filter(function (line, index) {
           return index >= data.toString().split('\n').length - 5;
-        }).join('\n'))
-        process.stdout.write('\n')
+        }).join('\n')
+        output += '\n'
       })
     })
     setTimeout(function () {
-      process.stdout.write('\nprompt > ');
+      done(output)
     }, 5)
   },
 
-  curl: function(args) {
+  curl: function(args, done) {
     var url = 'http://' + args[1]
 
     request(url, function (err, response, body) {
       if (err) throw err
       if (response.statusCode === 200) {
-        process.stdout.write(body)
-        process.stdout.write('\nprompt > ');
+        done(body)
       }
     }) 
   }
